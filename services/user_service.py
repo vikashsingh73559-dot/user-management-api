@@ -1,21 +1,31 @@
 from models.user import User, db
 
 
-def get_all_users():
-    return User.query.all()
+def get_users(search="", page=1, limit=10):
+    query = User.query
+
+    if search:
+        query = query.filter(
+            db.or_(
+                User.name.ilike(f"%{search}%"),
+                User.email.ilike(f"%{search}%")
+            )
+        )
+
+    total = query.count()
+
+    users = (
+        query
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .all()
+    )
+
+    return users, total
 
 
 def get_user_by_id(user_id):
     return User.query.get(user_id)
-
-
-def search_users(search_term):
-    return User.query.filter(
-        db.or_(
-            User.name.ilike(f"%{search_term}%"),
-            User.email.ilike(f"%{search_term}%")
-        )
-    ).all()
 
 
 def create_user(name, email, role):
