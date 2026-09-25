@@ -1,6 +1,6 @@
 # User Management API
 
-A RESTful User Management API built using Flask, MySQL, and SQLAlchemy.
+A RESTful User Management API built with Flask, MySQL, and SQLAlchemy.
 
 This project was developed as part of a Software Engineer assignment.
 
@@ -29,10 +29,11 @@ This project was developed as part of a Software Engineer assignment.
 - Required field validation
 - Email format validation
 - Duplicate email handling
-- User not found handling
+- User-not-found handling
 - Database error handling
-- JSON-based API responses
-- Modular project structure
+- JSON API responses
+- Modular architecture
+- Environment-based configuration
 
 ---
 
@@ -60,19 +61,19 @@ user-management-api/
 └── README.md
 ```
 
-> `.env` is used for local environment configuration and is excluded from Git using `.gitignore`.
+> `.env` is used for local environment configuration and is excluded from version control using `.gitignore`.
 
 ---
 
 # Database
 
-## Database Name
+## Database
 
 ```text
 users
 ```
 
-## Table: users
+## Users Table
 
 | Column | Type | Constraints |
 |---|---|---|
@@ -81,13 +82,13 @@ users
 | email | VARCHAR(150) | UNIQUE, NOT NULL |
 | role | VARCHAR(50) | NOT NULL |
 
-The `users` table is automatically created using SQLAlchemy when the application starts.
+The application uses SQLAlchemy to create the database table when the application is initialized.
 
 ---
 
 # Setup Instructions
 
-## 1. Clone Repository
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/vikashsingh73559-dot/user-management-api.git
@@ -133,9 +134,9 @@ DATABASE_URL=mysql+pymysql://root:@localhost/users
 SECRET_KEY=your-secret-key-here
 ```
 
-If your MySQL installation has a password, update the connection string accordingly.
+If your MySQL installation uses a password, update the connection string accordingly.
 
-> Do not commit the `.env` file to GitHub.
+> Never commit the `.env` file to GitHub.
 
 ## 7. Run the Application
 
@@ -164,7 +165,7 @@ GET /users
 ### Example
 
 ```text
-GET http://127.0.0.1:5000/users
+http://127.0.0.1:5000/users
 ```
 
 ### Response
@@ -189,9 +190,15 @@ GET http://127.0.0.1:5000/users
 }
 ```
 
+### Status
+
+```text
+200 OK
+```
+
 ---
 
-# 2. Create User
+## 2. Create User
 
 ### Endpoint
 
@@ -209,7 +216,7 @@ POST /users
 }
 ```
 
-### Successful Response
+### Response
 
 ```json
 {
@@ -223,7 +230,7 @@ POST /users
 }
 ```
 
-### Status Code
+### Status
 
 ```text
 201 Created
@@ -231,7 +238,7 @@ POST /users
 
 ---
 
-# 3. Get User by ID
+## 3. Get User by ID
 
 ### Endpoint
 
@@ -242,10 +249,10 @@ GET /users/<id>
 ### Example
 
 ```text
-GET http://127.0.0.1:5000/users/1
+http://127.0.0.1:5000/users/1
 ```
 
-### Successful Response
+### Response
 
 ```json
 {
@@ -259,9 +266,15 @@ GET http://127.0.0.1:5000/users/1
 }
 ```
 
+### Status
+
+```text
+200 OK
+```
+
 ---
 
-# 4. Search Users
+## 4. Search Users
 
 Users can be searched by name or email.
 
@@ -274,14 +287,14 @@ GET /users?search=<search_term>
 ### Example
 
 ```text
-GET http://127.0.0.1:5000/users?search=vikash
+http://127.0.0.1:5000/users?search=vikash
 ```
 
-The search matches both user name and email.
+The search checks both `name` and `email`.
 
 ---
 
-# 5. Pagination
+## 5. Pagination
 
 ### Endpoint
 
@@ -292,7 +305,7 @@ GET /users?page=1&limit=10
 ### Example
 
 ```text
-GET http://127.0.0.1:5000/users?page=1&limit=10
+http://127.0.0.1:5000/users?page=1&limit=10
 ```
 
 ### Response
@@ -310,10 +323,12 @@ GET http://127.0.0.1:5000/users?page=1&limit=10
 }
 ```
 
-Default values:
+### Default Values
 
-- Page: `1`
-- Limit: `10`
+| Parameter | Default |
+|---|---:|
+| page | 1 |
+| limit | 10 |
 
 ---
 
@@ -321,13 +336,13 @@ Default values:
 
 ## Missing Required Field
 
-The following fields are required:
+Required fields:
 
 - `name`
 - `email`
 - `role`
 
-### Example Request
+### Example
 
 ```json
 {
@@ -345,7 +360,7 @@ The following fields are required:
 }
 ```
 
-Status:
+### Status
 
 ```text
 400 Bad Request
@@ -355,7 +370,7 @@ Status:
 
 ## Invalid Email
 
-### Example Request
+### Example
 
 ```json
 {
@@ -374,7 +389,7 @@ Status:
 }
 ```
 
-Status:
+### Status
 
 ```text
 400 Bad Request
@@ -384,9 +399,7 @@ Status:
 
 ## Duplicate Email
 
-If the email already exists:
-
-### Response
+If the submitted email already exists:
 
 ```json
 {
@@ -395,7 +408,7 @@ If the email already exists:
 }
 ```
 
-Status:
+### Status
 
 ```text
 409 Conflict
@@ -420,7 +433,7 @@ GET /users/999
 }
 ```
 
-Status:
+### Status
 
 ```text
 404 Not Found
@@ -435,51 +448,57 @@ Status:
 | GET | `/users` | Retrieve users |
 | POST | `/users` | Create a user |
 | GET | `/users/<id>` | Retrieve user by ID |
-| GET | `/users?search=` | Search users |
+| GET | `/users?search=` | Search by name/email |
 | GET | `/users?page=1&limit=10` | Paginated users |
 
 ---
 
-# Code Architecture
+# Architecture
 
 The application follows a modular architecture:
 
 ```text
 Client
-   ↓
+   │
+   ▼
 Routes
-   ↓
+   │
+   ▼
 Services
-   ↓
+   │
+   ▼
 Models
-   ↓
+   │
+   ▼
 MySQL
 ```
 
 ### Routes
 
-Handles:
+Responsible for:
 
-- HTTP requests
+- Handling HTTP requests
 - Request validation
-- Response formatting
+- Query parameters
+- HTTP responses
 
 ### Services
 
-Handles:
+Responsible for:
 
 - User-related business logic
 - Database operations
+- Query and pagination logic
 
 ### Models
 
-Defines:
+Responsible for:
 
-- Database tables
+- Database schema
 - Database fields
-- Model serialization
+- Data serialization
 
-This separation keeps the application organized and easier to maintain.
+This separation keeps the application maintainable and makes it easier to extend.
 
 ---
 
@@ -488,17 +507,18 @@ This separation keeps the application organized and easier to maintain.
 - MySQL is running locally during development.
 - The local MySQL `root` user does not have a password.
 - User email addresses must be unique.
-- `name`, `email`, and `role` are mandatory fields.
+- `name`, `email`, and `role` are required.
 - API responses are JSON-based.
-- Pagination defaults to page 1 with a limit of 10 users.
+- Pagination defaults to page 1 with a limit of 10.
 - Search supports both name and email.
-- The `.env` file contains local configuration and is excluded from version control.
+- The `.env` file contains local configuration and is excluded from Git.
+- The API is intended for local development as part of the assignment.
 
 ---
 
 # Git Workflow
 
-The project uses a dedicated `assignment` branch for the assignment implementation.
+The assignment implementation was developed using a dedicated branch:
 
 ```text
 main
@@ -506,7 +526,32 @@ main
   └── assignment
 ```
 
-The implementation was developed on the `assignment` branch and pushed to GitHub.
+The `assignment` branch contains the implementation and documentation changes.
+
+A Pull Request is created from:
+
+```text
+assignment → main
+```
+
+---
+
+# Testing
+
+The API was tested locally using Postman.
+
+The following scenarios were tested:
+
+- Create user
+- Retrieve all users
+- Retrieve user by ID
+- Search users
+- Pagination
+- Missing required fields
+- Invalid email format
+- Duplicate email
+- User not found
+- MySQL database integration
 
 ---
 
@@ -514,7 +559,7 @@ The implementation was developed on the `assignment` branch and pushed to GitHub
 
 AI tools were used during development of this assignment.
 
-## AI Tool Used
+## AI Tool
 
 - ChatGPT
 
@@ -528,26 +573,23 @@ AI assistance was used for:
 - Validation and error-handling guidance
 - Search and pagination implementation
 - Debugging and troubleshooting
-- Documentation drafting
+- README documentation drafting
 
-## Manual Work and Modifications
+## Manual Work
 
-The implementation was manually reviewed, modified, and tested during development.
+The implementation was manually reviewed, modified, tested, and integrated.
 
-The following functionality was tested locally using Postman:
+The developer understands the implementation and can explain:
 
-- User creation
-- Retrieve all users
-- Retrieve user by ID
-- Search by name/email
+- API architecture
+- Flask routes
+- Service layer
+- SQLAlchemy models
+- MySQL integration
+- Validation logic
 - Pagination
-- Required field validation
-- Invalid email validation
-- Duplicate email handling
-- User-not-found handling
-- Database integration
-
-The developer understands the implementation and can explain the architecture, API behavior, validation logic, database design, and implementation decisions.
+- Error handling
+- Git workflow
 
 ---
 
@@ -557,11 +599,11 @@ For a production environment, the following improvements could be considered:
 
 - JWT authentication
 - Role-based authorization
-- Docker containerization
 - Automated unit and integration tests
 - Database migrations
+- Docker containerization
 - API rate limiting
 - Structured logging
-- Monitoring and alerting
+- Monitoring and health checks
 - CI/CD pipeline
 - Production database configuration
